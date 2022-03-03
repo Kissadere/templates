@@ -1,0 +1,106 @@
+{
+  "name": "l4d2",
+  "display": "Left 4 Dead 2",
+  "type": "Source Dedicated Server",
+  "install": [
+    {
+      "files": [
+        "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz"
+      ],
+      "type": "download"
+    },
+    {
+      "files": [
+        "https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1145-linux.tar.gz"
+      ],
+      "type": "download"
+    },
+    {
+      "files": [
+        "https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6529-linux.tar.gz"
+      ],
+      "type": "download"
+    },
+    {
+      "target": "steamcmd",
+      "type": "mkdir"
+    },
+    {
+      "commands": [
+        "tar --no-same-owner -xzvf steamcmd_linux.tar.gz -C steamcmd",
+        "steamcmd/steamcmd.sh +login anonymous +force_install_dir ${rootDir} +app_update 222860 +quit",
+        "mkdir -p .steam/sdk32",
+        "cp steamcmd/linux32/steamclient.so .steam/sdk32/steamclient.so",
+        "tar --no-same-owner -xzvf mmsource-1.11.0-git1145-linux.tar.gz -C ./left4dead2/",
+        "tar --no-same-owner -xzvf sourcemod-1.10.0-git6529-linux.tar.gz -C ./left4dead2/"
+      ],
+      "type": "command"
+    },
+    {
+      "target": "server.cfg",
+      "text": "hostname 'Your Server Name Here'\nrcon_password yourpass\n\n// This states how players should contact you\nsv_contact your@email.com\n\n// # of rounds to play (versus)\nmp_roundlimit 2\n\n// Use a search key to find the server in the lobby\n//sv_search_key ''\n//sv_tags ''\n\n// STEAM GROUP\nsv_steamgroup GROUPIDHERE\n\n//FRIENDLY FIRE 1=ON 0=OFF\nsm_cvar survivor_friendly_fire_factor_easy 1\nsm_cvar survivor_friendly_fire_factor_expert 1\nsm_cvar survivor_friendly_fire_factor_hard 1\nsm_cvar survivor_friendly_fire_factor_normal 1\n\n// CHEAT/CONFIG\nsv_lan 0\nsv_cheats 0\nsv_consistency 1\nsv_maxcmdrate 101\nsv_maxrate 30000\n\n//MOTD\nmotd_enabled 1\n\n//GAME MODE\nsv_gametypes 'coop, versus, mutation'\nsm_cvar mp_gamemode coop\n\n//DIFFICULTY\nz_difficulty Impossible\n\n//LOBBY CONNECT\nsv_allow_lobby_connect_only 0\n\n//BEBOP\n//l4d_maxplayers '8'\n//sv_maxplayers '8'\n//sm_cvar l4d_maxplayers '8'\n//sv_visiblemaxplayers '-1'\n//sm_cvar l4d_survivor_limit '8'\n//sm_cvar sv_removehumanlimit '1'\n\n//Game Settings\n\nmp_disable_autokick 1         //(command)prevents a userid from being auto-kicked (Usage mp_diable_autokick )\nsv_allow_wait_command 0        //default 1; Allow or disalow the wait command on clients connected to this server.\nsv_alternateticks 0        //defulat 0; (singleplayer)If set, server only simulates entities on even numbered ticks.\nsv_clearhinthistory 0        //(command)Clear memory of server side hint displayed to the player.\nsv_consistency 0        //default 1; Whether the server enforces file consistency for critical files\nsv_pausable 0            //default 0; is the server pausable\nsv_forcepreload 1        //default 0; Force server side preloading\nsv_pure_kick_clients 0        //default 1; If set to 1, the server will kick clients with mismatchng files. Otherwise, it will issue a warning to the client.\nsv_pure 0            //If set to 1, server will force all client files execpt whitelisted ones (in pure_server_whitelist.txt) to match server's files.\n                //If set to 2, the server will force all clietn files to come from steam and not load pure_server_whilelist.txt. Set to 0 for disabled.\n\n// Communication\n\nsv_voiceenable 1    //default 1; enable/disable voice comm\nsv_alltalk 1              //default 0; Players can hear all other players' voice communication, no team restrictions\n\n// Logging\nlog on               //Creates a logfile (on | off)\nsv_logecho 0    //default 0; Echo log information to the console.\nsv_logfile 1       //default 1; Log server information in the log file.\nsv_log_onefile 0    //default 0; Log server information to only one file.\nsv_logbans 1         //default 0;Log server bans in the server logs.\nsv_logflush 0         //default 0; Flush the log files to disk on each write (slow).\nsv_logsdir logs      //Folder in the game directory where server logs will be stored.\n\n// Bans\n//  execute banned.cfgs at server start. Optimally at launch commandline.\nexec banned_user.cfg  //loads banned users' ids\nexec banned_ip.cfg      //loads banned users' ips\nwriteip          // Save the ban list to banned_ip.cfg.\nwriteid          // Wrties a list of permanently-banned user IDs to banned_user.cfg.\n\n//Network Tweaks - Increase network performance\n\nrate 10000              //default 10000; Max bytes/sec the host can recieve data\nsv_minrate 15000   //default '5000'; Min bandwidth rate allowed on server, 0 = unlimited\nsv_maxrate 30000   //default '0';  Max bandwidth rate allowed on server, 0 = unlimited\nsv_mincmdrate 20   //default 0; This sets the minimum value for cl_cmdrate. 0 = unlimited [cevo=67]\nsv_maxcmdrate 33    //default 40; (If sv_mincmdrate is > 0), this sets the maximum value for cl_cmdrate. [cevo=101]\n",
+      "type": "writefile"
+    },
+    {
+      "target": "banned_user.cfg",
+      "text": "// Banned users\n",
+      "type": "writefile"
+    },
+    {
+      "target": "banned_ip.cfg",
+      "text": "// Banned IPS\n",
+      "type": "writefile"
+    },
+    {
+      "target": "banned_ip.cfg",
+      "text": "'${map}' '99:z'\n",
+      "type": "writefile"
+    },
+  ],
+  "run": {
+    "stop": "quit",
+    "command": "./srcds_run +ip ${ip} +port ${port} -consle -game left4dead2 +map ${map} -secure +exec server.cfg",
+    "workingDirectory": "",
+    "pre": [],
+    "post": [],
+    "environmentVars": {}
+  },
+  "data": {
+    "ip": {
+      "type": "string",
+      "desc": "What IP to bind the server to",
+      "display": "IP",
+      "required": true,
+      "value": "0.0.0.0"
+    },
+    "port": {
+      "type": "integer",
+      "desc": "What port to bind the server to",
+      "display": "Port",
+      "required": true,
+      "value": "27015"
+    },
+    "map": {
+      "type": "string",
+      "desc": "Map",
+      "display": "Map to load",
+      "required": true,
+      "value": "c1m1_hotel"
+    },
+    "admin": {
+      "type": "string",
+      "desc": "Admin",
+      "display": "Steam ID of the server owner/admin",
+      "required": true,
+      "value": "STEAM_1:0:00000000"
+    }
+  },
+  "environment": {
+    "type": "tty"
+  },
+  "supportedEnvironments": [
+    {
+      "type": "tty"
+    }
+  ]
+}
